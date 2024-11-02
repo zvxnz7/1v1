@@ -1,0 +1,54 @@
+/* General Styling */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #222;
+    color: #f1f1f1;
+}
+
+.container {
+    text-align: center;
+    padding: 20px;
+}
+
+.money-display, .multiplier-box, .result-box {
+    font-size: 2rem;
+    margin: 20px 0;
+}
+
+.input-container {
+    margin: 20px 0;
+}
+
+#betAmount, #betButton {
+    font-size: 1.5rem;
+    padding: 10px;
+    margin: 5px;
+}
+
+#betAmount {
+    width: 200px;
+    text-align: center;
+}
+
+#betButton {
+    cursor: pointer;
+    background-color: #333;
+    color: #f1f1f1;
+    border: none;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+#betButton:hover {
+    background-color: #444;
+}
