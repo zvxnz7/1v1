@@ -1,12 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
     const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_AUTH_DOMAIN",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_STORAGE_BUCKET",
-        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-        appId: "YOUR_APP_ID"
+        apiKey: "AIzaSyCbSyocu6e8t7UTLJ4VBwULgBxt38ggw1k",
+        authDomain: "casino777-7.firebaseapp.com",
+        projectId: "casino777-7",
+        storageBucket: "casino777-7.appspot.com",
+        messagingSenderId: "824259346500",
+        appId: "1:824259346500:web:1ace23689863864cc23c11",
+        measurementId: "G-LHMDCMRY9E"
     };
+
 
     // Initialize Firebase
     const app = firebase.initializeApp(firebaseConfig);
