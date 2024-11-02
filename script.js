@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
         appId: "1:824259346500:web:1ace23689863864cc23c11",
         measurementId: "G-LHMDCMRY9E"
     };
-
     // Initialize Firebase
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore(app);
@@ -20,17 +19,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const challengeListContainer = document.getElementById("challengeList");
 
     let currentPlayer = {
-        id: "player1", // Unique ID for each player
+        id: "player1", // Example player ID, should be unique per user
         money: 1000
     };
 
+    // Sync player data
     async function syncPlayerData() {
         const playerRef = db.collection("players").doc(currentPlayer.id);
         const playerSnapshot = await playerRef.get();
         if (playerSnapshot.exists) {
             currentPlayer.money = playerSnapshot.data().money;
+            console.log("Player data loaded:", currentPlayer);
         } else {
             await playerRef.set({ money: currentPlayer.money });
+            console.log("Player data initialized:", currentPlayer);
         }
     }
 
@@ -38,12 +40,17 @@ document.addEventListener("DOMContentLoaded", () => {
     betButton.addEventListener("click", async () => {
         const betAmount = parseInt(betAmountInput.value, 10);
         if (betAmount > 0 && betAmount <= currentPlayer.money) {
-            await db.collection("challenges").add({
-                challengerId: currentPlayer.id,
-                amount: betAmount,
-                status: "pending"
-            });
-            notificationDisplay.textContent = "Challenge created! Waiting for an opponent.";
+            try {
+                await db.collection("challenges").add({
+                    challengerId: currentPlayer.id,
+                    amount: betAmount,
+                    status: "pending"
+                });
+                notificationDisplay.textContent = "Challenge created! Waiting for an opponent.";
+                console.log("Challenge created with amount:", betAmount);
+            } catch (error) {
+                console.error("Error creating challenge:", error);
+            }
         } else {
             notificationDisplay.textContent = "Invalid bet amount.";
         }
@@ -55,19 +62,23 @@ document.addEventListener("DOMContentLoaded", () => {
             .where("status", "==", "pending")
             .onSnapshot((snapshot) => {
                 challengeListContainer.innerHTML = ""; // Clear current list
-                snapshot.forEach((doc) => {
-                    const challenge = doc.data();
-                    if (challenge.challengerId !== currentPlayer.id) {
-                        // Only display challenges from other players
-                        const challengeItem = document.createElement("div");
-                        challengeItem.classList.add("challenge-item");
-                        challengeItem.innerHTML = `
-                            <p>Challenge by ${challenge.challengerId} - Amount: $${challenge.amount}</p>
-                            <button class="accept-btn" data-id="${doc.id}">Accept</button>
-                        `;
-                        challengeListContainer.appendChild(challengeItem);
-                    }
-                });
+                if (snapshot.empty) {
+                    console.log("No active challenges found.");
+                } else {
+                    snapshot.forEach((doc) => {
+                        const challenge = doc.data();
+                        console.log("Active challenge found:", challenge);
+                        if (challenge.challengerId !== currentPlayer.id) {
+                            const challengeItem = document.createElement("div");
+                            challengeItem.classList.add("challenge-item");
+                            challengeItem.innerHTML = `
+                                <p>Challenge by ${challenge.challengerId} - Amount: $${challenge.amount}</p>
+                                <button class="accept-btn" data-id="${doc.id}">Accept</button>
+                            `;
+                            challengeListContainer.appendChild(challengeItem);
+                        }
+                    });
+                }
             });
     }
 
