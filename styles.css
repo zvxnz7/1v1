@@ -1,9 +1,14 @@
-/* General Styling */
+/* General styling */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
+}
+
+html, body {
+    overflow: hidden;
+    height: 100%;
 }
 
 body {
@@ -18,37 +23,103 @@ body {
 .container {
     text-align: center;
     padding: 20px;
+    position: relative;
+    max-width: 400px;
+    background-color: #333;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
-.money-display, .multiplier-box, .result-box {
+/* Money display styling */
+.money-display {
     font-size: 2rem;
-    margin: 20px 0;
+    margin-bottom: 30px;
+    color: #a4ff9c;
+    text-align: center;
+    font-weight: bold;
 }
 
+/* Input container styling */
 .input-container {
-    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-#betAmount, #betButton {
-    font-size: 1.5rem;
-    padding: 10px;
-    margin: 5px;
-}
-
+/* Bet amount input styling */
 #betAmount {
+    padding: 10px;
+    font-size: 1.5rem;
     width: 200px;
+    border: none;
+    background-color: #333;
+    color: #f1f1f1;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 10px;
+    transition: background-color 0.2s;
     text-align: center;
 }
 
+#betAmount::placeholder {
+    color: #ccc;
+}
+
+/* Bet button styling */
 #betButton {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 10px 20px;
+    font-size: 1.5rem;
     cursor: pointer;
     background-color: #333;
     color: #f1f1f1;
     border: none;
     border-radius: 8px;
     transition: background-color 0.2s;
+    width: 200px;
 }
 
-#betButton:hover {
+#betButton:hover,
+#betAmount:focus {
     background-color: #444;
+}
+
+/* Multiplier and winner display styling */
+.mltplier-display {
+    font-size: 2rem;
+    margin-top: 30px;
+    color: #f1f1f1;
+    text-align: center;
+}
+
+.winner-display {
+    font-size: 2rem;
+    margin-top: 15px;
+    color: #a4ff9c;
+    font-weight: bold;
+}
+
+/* Notification styling */
+.notification {
+    font-size: 1.2rem;
+    color: #ff6767;
+    margin-top: 10px;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+    .container {
+        max-width: 100%;
+        padding: 15px;
+    }
+
+    .money-display, .mltplier-display, .winner-display {
+        font-size: 1.5rem;
+    }
+
+    #betAmount, #betButton {
+        font-size: 1.2rem;
+        width: 100%;
+    }
 }
