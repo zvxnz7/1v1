@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1v1 Bet Game</title>
+    <title>Bet Requests</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <div class="money-display">Balance: $<span id="balance">1000</span></div>
-        <div class="input-container">
-            <input type="number" id="betAmount" placeholder="Enter bet amount" min="1">
-            <button id="betButton">Place Bet</button>
-        </div>
-        <div class="multiplier-box" id="multiplierBox"></div>
-        <div class="result-box" id="resultBox"></div>
+        <h1>Create or Join a 1v1 Bet</h1>
+        <input type="number" id="betAmount" placeholder="Enter bet amount" min="1">
+        <button id="createRequest">Create Request</button>
+        <div id="availableRequests"></div>
     </div>
 
+    <!-- Firebase and Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
