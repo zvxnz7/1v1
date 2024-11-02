@@ -65,10 +65,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 challengeListContainer.innerHTML = ""; // Clear current list
                 if (snapshot.empty) {
                     console.log("No active challenges found.");
+                    challengeListContainer.innerHTML = "<p>No active challenges available.</p>";
                 } else {
+                    console.log("Active challenges found:", snapshot.size);
                     snapshot.forEach((doc) => {
                         const challenge = doc.data();
-                        console.log("Active challenge found:", challenge);
+                        console.log("Processing challenge:", challenge);
+    
+                        // Only display challenges from other players
                         if (challenge.challengerId !== currentPlayer.id) {
                             const challengeItem = document.createElement("div");
                             challengeItem.classList.add("challenge-item");
@@ -79,9 +83,15 @@ document.addEventListener("DOMContentLoaded", () => {
                             challengeListContainer.appendChild(challengeItem);
                         }
                     });
+    
+                    // If no challenges from other players are available
+                    if (challengeListContainer.innerHTML === "") {
+                        challengeListContainer.innerHTML = "<p>No active challenges available from other players.</p>";
+                    }
                 }
             });
     }
+
 
     // Accept a challenge
     challengeListContainer.addEventListener("click", async (event) => {
