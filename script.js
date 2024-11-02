@@ -68,4 +68,57 @@ function acceptBet(requestId) {
     });
 }
 
+// Get request ID from URL
+const urlParams = new URLSearchParams(window.location.search);
+const requestId = urlParams.get("requestId");
+
+if (requestId) {
+    // Start game for accepted bet
+    db.collection("bets").doc(requestId).get().then(doc => {
+        if (doc.exists && doc.data().status === "accepted") {
+            playGame(doc);
+        } else {
+            document.getElementById("gameStatus").textContent = "This game is not available.";
+        }
+    }).catch(error => {
+        console.error("Error fetching request: ", error);
+    });
+}
+
+// Game logic
+function playGame(doc) {
+    const data = doc.data();
+    const betAmount = data.amount;
+
+    // Generate random multipliers
+    const player1Multiplier = (Math.random() * 2 + 1).toFixed(2);
+    const player2Multiplier = (Math.random() * 2 + 1).toFixed(2);
+
+    // Display multipliers
+    document.getElementById("multiplierBox").innerHTML = `
+        Your Multiplier: ${player1Multiplier} <br>
+        Opponent's Multiplier: ${player2Multiplier}
+    `;
+
+    // Determine winner
+    let result;
+    if (player1Multiplier > player2Multiplier) {
+        result = `You win $${(betAmount * player1Multiplier).toFixed(2)}!`;
+    } else if (player1Multiplier < player2Multiplier) {
+        result = "You lose!";
+    } else {
+        result = "It's a tie!";
+    }
+
+    // Update result in Firestore
+    db.collection("bets").doc(requestId).update({
+        status: "completed",
+        result: result
+    }).then(() => {
+        document.getElementById("resultBox").textContent = result;
+    }).catch(error => {
+        console.error("Error updating result: ", error);
+    });
+}
+
 fetchRequests();
