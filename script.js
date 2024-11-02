@@ -1,43 +1,71 @@
-// Initial player balance
-let balance = 1000;
-document.getElementById('balance').textContent = balance;
+// Your web app's Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyCbSyocu6e8t7UTLJ4VBwULgBxt38ggw1k",
+    authDomain: "casino777-7.firebaseapp.com",
+    projectId: "casino777-7",
+    storageBucket: "casino777-7.appspot.com",
+    messagingSenderId: "824259346500",
+    appId: "1:824259346500:web:1ace23689863864cc23c11",
+    measurementId: "G-LHMDCMRY9E"
+};
 
-// Betting function
-document.getElementById('betButton').addEventListener('click', placeBet);
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-function placeBet() {
-    const betAmount = parseInt(document.getElementById('betAmount').value);
-    const multiplierBox = document.getElementById('multiplierBox');
-    const resultBox = document.getElementById('resultBox');
+// Request Page Elements
+const betAmountInput = document.getElementById('betAmount');
+const createRequestButton = document.getElementById('createRequest');
+const availableRequestsDiv = document.getElementById('availableRequests');
 
-    // Validate bet amount
-    if (isNaN(betAmount) || betAmount < 1 || betAmount > balance) {
-        alert('Enter a valid bet amount within your balance.');
+// Create a new bet request
+createRequestButton.addEventListener('click', () => {
+    const betAmount = parseInt(betAmountInput.value);
+    if (isNaN(betAmount) || betAmount < 1) {
+        alert("Enter a valid bet amount.");
         return;
     }
 
-    // Generate random multipliers for both players (range 1.0 to 3.0)
-    const player1Multiplier = (Math.random() * 2 + 1).toFixed(2);
-    const player2Multiplier = (Math.random() * 2 + 1).toFixed(2);
+    db.collection("bets").add({
+        amount: betAmount,
+        status: "open",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+        alert("Bet request created!");
+        betAmountInput.value = "";
+    }).catch(error => {
+        console.error("Error creating request: ", error);
+    });
+});
 
-    // Display multipliers
-    multiplierBox.innerHTML = `
-        Your Multiplier: ${player1Multiplier} <br>
-        Opponent's Multiplier: ${player2Multiplier}
-    `;
-
-    // Determine winner
-    if (player1Multiplier > player2Multiplier) {
-        const winnings = (betAmount * player1Multiplier).toFixed(2);
-        balance += parseFloat(winnings) - betAmount; // Win amount after subtracting bet
-        resultBox.textContent = `You win $${winnings}! Your new balance is $${balance}.`;
-    } else if (player1Multiplier < player2Multiplier) {
-        balance -= betAmount;
-        resultBox.textContent = `You lose! Your new balance is $${balance}.`;
-    } else {
-        resultBox.textContent = `It's a tie! No money lost.`;
-    }
-
-    // Update balance display
-    document.getElementById('balance').textContent = balance;
+// Fetch and display open requests
+function fetchRequests() {
+    db.collection("bets")
+      .where("status", "==", "open")
+      .onSnapshot(snapshot => {
+          availableRequestsDiv.innerHTML = "";
+          snapshot.forEach(doc => {
+              const data = doc.data();
+              const requestItem = document.createElement('div');
+              requestItem.textContent = `Bet: $${data.amount}`;
+              const joinButton = document.createElement('button');
+              joinButton.textContent = "Join Bet";
+              joinButton.addEventListener('click', () => acceptBet(doc.id));
+              requestItem.appendChild(joinButton);
+              availableRequestsDiv.appendChild(requestItem);
+          });
+      });
 }
+
+// Accept a bet request
+function acceptBet(requestId) {
+    db.collection("bets").doc(requestId).update({
+        status: "accepted"
+    }).then(() => {
+        window.location.href = `1v1.html?requestId=${requestId}`;
+    }).catch(error => {
+        console.error("Error accepting bet: ", error);
+    });
+}
+
+fetchRequests();
