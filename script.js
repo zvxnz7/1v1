@@ -57,8 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Fetch and display active challenges
-    // Fetch and display active challenges
     function fetchChallenges() {
         db.collection("challenges")
             .where("status", "==", "pending")
@@ -75,25 +73,26 @@ document.addEventListener("DOMContentLoaded", () => {
                         const challenge = doc.data();
                         console.log("Processing challenge:", challenge);
     
-                        // Only display challenges from other players
-                        if (challenge.challengerId !== currentPlayer.id) {
-                            const challengeItem = document.createElement("div");
-                            challengeItem.classList.add("challenge-item");
-                            challengeItem.innerHTML = `
-                                <p>Challenge by ${challenge.challengerId} - Amount: $${challenge.amount}</p>
-                                <button class="accept-btn" data-id="${doc.id}">Accept</button>
-                            `;
-                            challengeListContainer.appendChild(challengeItem);
-                        }
+                        // TEMPORARY: Display all challenges for debugging
+                        // Remove condition to see if filtering is causing the issue
+                        const challengeItem = document.createElement("div");
+                        challengeItem.classList.add("challenge-item");
+                        challengeItem.innerHTML = `
+                            <p>Challenge by ${challenge.challengerId} - Amount: $${challenge.amount}</p>
+                            <button class="accept-btn" data-id="${doc.id}">Accept</button>
+                        `;
+                        challengeListContainer.appendChild(challengeItem);
+                        console.log("Added challenge item to DOM:", challengeItem);
                     });
     
-                    // Check if any challenges were added for display
+                    // If no challenges are available to display
                     if (!challengeListContainer.querySelector(".challenge-item")) {
                         challengeListContainer.innerHTML = "<p>No active challenges available from other players.</p>";
                     }
                 }
             });
     }
+
 
 
     // Accept a challenge
