@@ -58,16 +58,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Fetch and display active challenges
+    // Fetch and display active challenges
     function fetchChallenges() {
         db.collection("challenges")
             .where("status", "==", "pending")
             .onSnapshot((snapshot) => {
                 challengeListContainer.innerHTML = ""; // Clear current list
+    
                 if (snapshot.empty) {
                     console.log("No active challenges found.");
                     challengeListContainer.innerHTML = "<p>No active challenges available.</p>";
                 } else {
                     console.log("Active challenges found:", snapshot.size);
+    
                     snapshot.forEach((doc) => {
                         const challenge = doc.data();
                         console.log("Processing challenge:", challenge);
@@ -84,8 +87,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     });
     
-                    // If no challenges from other players are available
-                    if (challengeListContainer.innerHTML === "") {
+                    // Check if any challenges were added for display
+                    if (!challengeListContainer.querySelector(".challenge-item")) {
                         challengeListContainer.innerHTML = "<p>No active challenges available from other players.</p>";
                     }
                 }
