@@ -18,29 +18,70 @@ document.addEventListener("DOMContentLoaded", () => {
     const betButton = document.getElementById("betButton");
     const notificationDisplay = document.querySelector(".notification");
     const challengeListContainer = document.getElementById("challengeList");
+    let money = localStorage.getItem('userMoney');
 
-    let currentPlayer = {
-        id: "player1", // Example player ID, should be unique per user
-        money: 1000
-    };
 
     // Sync player data
-    async function syncPlayerData() {
-        const playerRef = db.collection("players").doc(currentPlayer.id);
-        const playerSnapshot = await playerRef.get();
-        if (playerSnapshot.exists) {
-            currentPlayer.money = playerSnapshot.data().money;
-            console.log("Player data loaded:", currentPlayer);
+    // async function syncPlayerData() {
+    //     const playerRef = db.collection("players").doc(currentPlayer.id);
+    //     const playerSnapshot = await playerRef.get();
+    //     if (playerSnapshot.exists) {
+    //         money = playerSnapshot.data().money;
+    //         console.log("Player data loaded:", currentPlayer);
+    //     } else {
+    //         await playerRef.set({ money: money });
+    //         console.log("Player data initialized:", currentPlayer);
+    //     }
+    // }
+
+
+        async function updateMoney() {
+        try {
+            const userQuery = await firebase.firestore().collection('users')
+                .where('username', '==', username)
+                .get();
+    
+            if (userQuery.empty) {
+                alert('Username not found.');
+                return;
+            }
+    
+            const userDoc = userQuery.docs[0];
+            const userData = userDoc.data();
+            userData.money = money;
+    
+            await firebase.firestore().collection('users').doc(userDoc.id).update({ money: userData.money });
+    
+        } catch (error) {
+            alert('Money failed. Please try again.');
+        }
+    }
+    
+    // Your other game functions...
+    // Example: Update money display
+    // Format money function to shorten large numbers
+    function formatMoney(value) {
+        if (value >= 1e9) {
+            return (Math.floor(value / 1e7) / 100).toFixed(2).replace(/\.00$/, '') + "B";
+        } else if (value >= 1e6) {
+            return (Math.floor(value / 1e4) / 100).toFixed(2).replace(/\.00$/, '') + "M";
+        } else if (value >= 1e3) {
+            return (Math.floor(value / 10) / 100).toFixed(2).replace(/\.00$/, '') + "K";
         } else {
-            await playerRef.set({ money: currentPlayer.money });
-            console.log("Player data initialized:", currentPlayer);
+            return Math.floor(value).toFixed(2); // For values under 1,000, keep two decimals
         }
     }
 
+
+
+    function updateMoneyDisplay() {
+        document.getElementById("moneyAmount").innerText = formatMoney(money);
+    }
+    
     // Create a challenge
     betButton.addEventListener("click", async () => {
         const betAmount = parseInt(betAmountInput.value, 10);
-        if (betAmount > 0 && betAmount <= currentPlayer.money) {
+        if (betAmount > 0 && betAmount <= money) {
             try {
                 await db.collection("challenges").add({
                     challengerId: currentPlayer.id,
@@ -105,13 +146,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 const challenge = challengeDoc.data();
                 const betAmount = challenge.amount;
 
-                if (currentPlayer.money >= betAmount) {
+                if (money >= betAmount) {
                     const challengerRef = db.collection("players").doc(challenge.challengerId);
                     const challengerSnapshot = await challengerRef.get();
 
                     if (challengerSnapshot.exists && challengerSnapshot.data().money >= betAmount) {
-                        currentPlayer.money -= betAmount;
-                        await db.collection("players").doc(currentPlayer.id).update({ money: currentPlayer.money });
+                        money -= betAmount;
+                        await db.collection("players").doc(currentPlayer.id).update({ money: money });
 
                         const challengerMoney = challengerSnapshot.data().money - betAmount;
                         await challengerRef.update({ money: challengerMoney });
@@ -123,8 +164,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         if (playerMultiplier > opponentMultiplier) {
                             winner = currentPlayer.id;
                             winnings = betAmount * playerMultiplier;
-                            currentPlayer.money += winnings;
-                            await db.collection("players").doc(currentPlayer.id).update({ money: currentPlayer.money });
+                            money += winnings;
+                            await db.collection("players").doc(currentPlayer.id).update({ money: money });
                         } else if (opponentMultiplier > playerMultiplier) {
                             winner = challenge.challengerId;
                             winnings = betAmount * opponentMultiplier;
