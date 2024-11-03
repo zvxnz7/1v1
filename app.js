@@ -43,7 +43,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             localStorage.setItem('userMoney', userMoney);
 
             // Redirect to game.html
-            window.location.href = 'games.html';
+            window.location.href = 'challenges.html';
         } else {
             alert('Incorrect password.');
         }
