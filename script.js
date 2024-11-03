@@ -190,6 +190,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Load player data and active challenges on page load
-    syncPlayerData();
+    updateMoney();
     fetchChallenges();
 });
